@@ -1,6 +1,6 @@
 {
   "name": "agentic-repurpose",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local content repurposing for X, LinkedIn, Instagram, and Reddit with six text templates, a TypeScript SDK, CLI, and MCP server.",
   "keywords": [
     "content-repurposing",
