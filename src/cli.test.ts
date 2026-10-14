@@ -1,91 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { parseArgs, runCli, UsageError, type CliIo } from "./cli.js";
-import { LocalRouterAdapter } from "./core.js";
-
-function testIo(overrides: Partial<CliIo> = {}): CliIo & { outLines: string[]; errLines: string[] } {
-  const outLines: string[] = [];
-  const errLines: string[] = [];
-  return {
-    outLines,
-    errLines,
-    out: (line) => outLines.push(line),
-    err: (line) => errLines.push(line),
-    readFile: (path) => `file:${path}`,
-    router: new LocalRouterAdapter(),
-    ...overrides,
-  };
-}
-
-describe("parseArgs", () => {
-  test("empty args print help", () => {
-    expect(parseArgs([]).command).toBe("help");
-  });
-
-  test("--version selects version", () => {
-    expect(parseArgs(["--version"]).command).toBe("version");
-  });
-
-  test("summary takes text and top", () => {
-    expect(parseArgs(["summary", "--text", "hi", "--top", "2"])).toEqual({
-      command: "summary",
-      text: "hi",
-      topN: 2,
-      dryRun: false,
-    });
-  });
-
-  test("dispatch takes dry run", () => {
-    const request = parseArgs(["dispatch", "--text", "hi", "--dry-run"]);
-    expect(request.command).toBe("dispatch");
-    expect(request.dryRun).toBe(true);
-  });
-
-  test("unknown command throws UsageError", () => {
-    expect(() => parseArgs(["frobnicate"])).toThrow(UsageError);
-  });
-
-  test("summary without input throws", () => {
-    expect(() => parseArgs(["summary"])).toThrow(/needs --text or --file/);
-  });
-
-  test("bad top value throws", () => {
-    expect(() => parseArgs(["summary", "--text", "hi", "--top", "many"])).toThrow(/--top/);
-  });
-});
-
-describe("runCli", () => {
-  test("summary prints JSON stats", async () => {
-    const io = testIo();
-    const code = await runCli(["summary", "--text", "hello world hello"], io);
-    expect(code).toBe(0);
-    expect(JSON.parse(io.outLines[0])).toMatchObject({ words: 3 });
-  });
-
-  test("summary reads a file when asked", async () => {
-    const io = testIo();
-    const code = await runCli(["summary", "--file", "note.txt"], io);
-    expect(code).toBe(0);
-    expect(JSON.parse(io.outLines[0])).toMatchObject({ words: 1 });
-  });
-
-  test("dispatch dry run prints a preview", async () => {
-    const io = testIo();
-    const code = await runCli(["dispatch", "--text", "hi", "--dry-run"], io);
-    expect(code).toBe(0);
-    expect(JSON.parse(io.outLines[0])).toMatchObject({ dryRun: true, chars: 2 });
-  });
-
-  test("bad usage exits 2", async () => {
-    const io = testIo();
-    const code = await runCli(["bogus"], io);
-    expect(code).toBe(2);
-    expect(io.errLines.length).toBeGreaterThan(0);
-  });
-
-  test("version prints a version string", async () => {
-    const io = testIo();
-    const code = await runCli(["--version"], io);
-    expect(code).toBe(0);
-    expect(io.outLines[0]).toMatch(/^\d+\.\d+\.\d+$/);
-  });
+function io(): CliIo & { lines: string[]; errors: string[] } { const lines: string[]=[]; const errors:string[]=[]; return { lines, errors, out:(x)=>lines.push(x), err:(x)=>errors.push(x), readFile:(p)=>`file content ${p}` }; }
+describe("cli", () => {
+ test("parses a repurpose request", () => expect(parseArgs(["repurpose", "--text", "hello", "--platforms", "linkedin,x-thread"])).toMatchObject({ command:"repurpose", dryRun:true, platforms:["linkedin","x-thread"] }));
+ test("requires approval for live", () => expect(() => parseArgs(["repurpose","--text","hi","--live"])).toThrow(UsageError));
+ test("prints variants", async () => { const x=io(); expect(await runCli(["repurpose","--text","hello world"],x)).toBe(0); expect(JSON.parse(x.lines[0]).variants).toHaveLength(6); });
+ test("reads file", async () => { const x=io(); await runCli(["repurpose","--file","note"],x); expect(JSON.parse(x.lines[0]).variants[0].content).toContain("file content"); });
 });

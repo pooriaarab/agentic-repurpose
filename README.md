@@ -1,108 +1,23 @@
-# Agentic repurpose
+# agentic-repurpose
 
-Turn one source into platform-ready post variants.
-
-Clone this repo to start a new pack. It gives one core with three
-faces: a terminal command, an npm import, and an MCP server.
-
-## What you get
-
-- One core: brand config, logs, guards, routing, dry run, cost reports.
-- Three faces over that core: CLI, library, MCP server.
-- A frozen core contract, so packs share one API.
-- A worker entry and a wrangler sample for edge deploys.
-- Build, typecheck, and tests that pass from a fresh clone.
-
-## Quick start
+Turn one source into disclosed, platform-ready variants for X threads, LinkedIn, Instagram, carousels, short videos, and Reddit.
 
 ```sh
-git clone https://github.com/pooriaarab/agentic-repurpose.git my-pack
-cd my-pack
 npm install
 npm run build
-npm run typecheck
-npm test
+node dist/cli.js repurpose --text "A useful source" --platforms linkedin,x-thread
 ```
 
-Run the command:
-
-```sh
-node dist/cli.js summary --text "hello world hello"
-```
-
-Call the library:
+The CLI defaults to dry-run. Live actions require both `--live` and `--approve`.
 
 ```js
-import { summarizeText } from "./dist/index.js";
-
-console.log(summarizeText("hello world hello"));
+import { repurpose, scoreVariant } from "agentic-repurpose";
+const variants = repurpose("A useful source", ["linkedin"]);
+console.log(variants, scoreVariant(variants[0]));
 ```
 
-Start the MCP server:
+Every generated variant includes an AI-assistance disclosure, respects character and hashtag caps, and reports safe truncation. URL sources can be loaded with `loadSource(url, { fetchFn })`; inject `fetchFn` in tests.
 
-```sh
-node dist/cli.js mcp
-```
+## MCP
 
-## Three usecases
-
-1. You run one text summary from the terminal.
-2. You import the summary function in a script.
-3. You let an agent call the same function as an MCP tool.
-
-## Clone checklist
-
-This repo is a template. Replace each slot in each file that holds it.
-
-- `agentic-repurpose`: the directory name, like `my-pack`.
-- `agentic-repurpose`: the npm name, like `agentic-<block>` (bare name, never @pooriaarab/ scoped unless the brief says scoped).
-- `agentic-repurpose`: the terminal command, like `my-pack`.
-- `Turn one source into platform-ready post variants.`: one plain sentence, under 100 chars.
-- `repurpose,content,social,agentic-suite,cli,mcp`: plain keywords, like `notes, search, cli`.
-- `pooriaarab`: the repo owner, like `pooriaarab`.
-
-Slot files: `AGENTS.md`, `SKILL.md`, `RULES.md`, `llms.txt`,
-`server.json`, `.mcp.json`, `wrangler.jsonc`.
-
-Then rename the scaffold identity itself:
-
-- `package.json`: name, bin commands, mcpName. Remove `"private": true`.
-- `src/index.ts`: the `DEFAULT_BRAND` fields.
-- This file: the pitch and the examples above.
-
-At publish time, set `server.json` version to the npm version and
-`server.json` repository id from `gh api repos/OWNER/REPO --jq .id`.
-
-## Gates
-
-Run all three before you push a pack:
-
-```sh
-npm run build && npm run typecheck && npm test
-```
-
-Then run the real installed CLI once from a tarball:
-
-```sh
-npm pack
-npx --yes --package ./pooriaarab-agentic-repurpose-0.1.0.tgz agentic-pack summary --text "hello"
-```
-
-## Release flow
-
-Push to `main` for review. Merge to `release` to publish. The
-publish workflow ships only when the version is new.
-
-## Layout
-
-- `src/index.ts`: the library face.
-- `src/cli.ts`: the terminal face.
-- `src/mcp.ts`: the MCP server. `src/mcp-bin.ts` starts it.
-- `src/worker.ts`: the edge worker face.
-- `src/core.ts`: the shared core.
-- `agentic-core.d.ts`: the frozen contract.
-- `docs/agentic-core.md`: the contract in plain words.
-
-## License
-
-MIT. See `LICENSE`.
+Run `node dist/cli.js mcp`, then use `repurpose` or `score_variant`. MCP repurpose is dry-run by default; a live action requires `live: true` and `approved: true`.
