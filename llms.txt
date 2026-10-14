@@ -1,0 +1,15 @@
+# agentic-repurpose
+
+Turn one source into platform-ready post variants.
+
+Keywords: repurpose,content,social,agentic-suite,cli,mcp.
+
+- SDK: import { summarizeText, dispatchText } from "agentic-repurpose".
+- CLI: agentic-repurpose summary --text "...".
+- MCP: run agentic-repurpose mcp, then call summarize_text.
+
+## Docs
+
+- README: https://github.com/pooriaarab/agentic-repurpose
+- Core contract: https://github.com/pooriaarab/agentic-repurpose/blob/main/docs/agentic-core.md
+- License: MIT

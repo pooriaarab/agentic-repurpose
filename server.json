@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.pooriaarab/agentic-repurpose",
+  "description": "Turn one source into platform-ready post variants.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/pooriaarab/agentic-repurpose",
+    "source": "github",
+    "id": 0
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "agentic-repurpose",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "runtimeHint": "npx",
+      "packageArguments": [
+        { "type": "positional", "valueHint": "subcommand", "value": "mcp" }
+      ]
+    }
+  ]
+}
